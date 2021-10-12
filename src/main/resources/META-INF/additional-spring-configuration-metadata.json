@@ -1,0 +1,177 @@
+{"properties": [
+  {
+    "name": "spring.datasource.hive.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.hive.driver-class-name'"
+  },
+  {
+    "name": "spring.datasource.hive.url",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.hive.url'"
+  },
+  {
+    "name": "application.name",
+    "type": "java.lang.String",
+    "description": "A description for 'application.name'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.filters",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.filters'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.initialSize",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.initialSize'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.maxWait",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.maxWait'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.timeBetweenEvictionRunsMillis",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.timeBetweenEvictionRunsMillis'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.minEvictableIdleTimeMillis",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.minEvictableIdleTimeMillis'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.validationQuery",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.validationQuery'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.testWhileIdle",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.testWhileIdle'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.testOnReturn",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.testOnReturn'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.maxPoolPreparedStatementPerConnectionSize",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.maxPoolPreparedStatementPerConnectionSize'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.poolPreparedStatements",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.poolPreparedStatements'"
+  },
+  {
+    "name": "spring.datasource.commonConfig.testOnBorrow",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.commonConfig.testOnBorrow'"
+  },
+  {
+    "name": "spring.datasource.hive.username",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.hive.username'"
+  },
+  {
+    "name": "spring.datasource.hive.password",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.hive.password'"
+  },
+  {
+    "name": "spring.datasource.hive.type",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.hive.type'"
+  },
+  {
+    "name": "hive.url",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.url'"
+  },
+  {
+    "name": "hive.driver-class-name",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.driver-class-name'"
+  },
+  {
+    "name": "hive.username",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.username'"
+  },
+  {
+    "name": "hive.password",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.password'"
+  },
+  {
+    "name": "hive.filters",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.filters'"
+  },
+  {
+    "name": "hive.maxPoolPreparedStatementPerConnectionSize",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.maxPoolPreparedStatementPerConnectionSize'"
+  },
+  {
+    "name": "hive.poolPreparedStatements",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.poolPreparedStatements'"
+  },
+  {
+    "name": "hive.testOnReturn",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.testOnReturn'"
+  },
+  {
+    "name": "hive.timeBetweenEvictionRunsMillis",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.timeBetweenEvictionRunsMillis'"
+  },
+  {
+    "name": "hive.minEvictableIdleTimeMillis",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.minEvictableIdleTimeMillis'"
+  },
+  {
+    "name": "hive.initialSize",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.initialSize'"
+  },
+  {
+    "name": "hive.maxWait",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.maxWait'"
+  },
+  {
+    "name": "hive.validationQuery",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.validationQuery'"
+  },
+  {
+    "name": "hive.testWhileIdle",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.testWhileIdle'"
+  },
+  {
+    "name": "hive.testOnBorrow",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.testOnBorrow'"
+  },
+  {
+    "name": "hive.type",
+    "type": "java.lang.String",
+    "description": "A description for 'hive.type'"
+  },
+  {
+    "name": "spring.datasource.druid.sqllite.pool-prepared-statements",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.druid.sqllite.pool-prepared-statements'"
+  },
+  {
+    "name": "spring.datasource.druid.sqllite.max-pool-prepared-statement-per-connection-size",
+    "type": "java.lang.String",
+    "description": "A description for 'spring.datasource.druid.sqllite.max-pool-prepared-statement-per-connection-size'"
+  }
+]}
