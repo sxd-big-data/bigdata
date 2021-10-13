@@ -16,7 +16,7 @@ import com.bigdata.mysql.vo.DbInfo;
  * @author: mason
  * @since: 2020/1/10
  **/
-public class JdkParamDsMethodProxy implements InvocationHandler {
+public class                                                                        JdkParamDsMethodProxy implements InvocationHandler {
     /**
      * 数据源key
      */

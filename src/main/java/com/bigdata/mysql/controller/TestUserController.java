@@ -45,9 +45,7 @@ public class TestUserController {
      */
     @GetMapping("table")
     public Object findWithDbInfo(DbInfo dbInfo) throws Exception {
-        /**
-         * http://localhost:8080/dd/user/table?ip=localhost&port=3310&dbName=mytest&username=root&password=111111
-         * **/
+
         //数据源key
         String newDsKey = System.currentTimeMillis()+"";
 //        //添加数据源

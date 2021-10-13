@@ -6,20 +6,14 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.hadoop.fs.Path;
-import org.apache.hadoop.hdfs.web.JsonUtil;
 import org.apache.spark.sql.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.bigdata.hadoop.utils.HDFSUtils;
-import com.bigdata.service.AclTreeNodeService;
-import com.bigdata.service.GoodsService;
-import com.bigdata.service.MilkSationService;
 import com.bigdata.service.OrderService;
 import com.bigdata.spark.service.SparkService;
 import com.bigdata.spark.sql.ExecSparkSql;
@@ -42,18 +36,9 @@ public class SparkSqlController {
 	
 	@Autowired
 	private SparkService sparkService;
+
 	
-	@Autowired
-	private OrderService orderService;
-	
-	@Autowired
-	private GoodsService goodsService;
-	
-	@Autowired
-	private AclTreeNodeService treeNodeService;
-	
-	@Autowired
-	private MilkSationService milkSationService;
+
 	
 	
 	
@@ -178,11 +163,11 @@ public class SparkSqlController {
         		"       (o.paidamount/100) AS totalPaidAmount,\r\n" + 
         		"      (CASE o.auditStatus WHEN 'AUDITED' THEN '已审核' WHEN 'CLOSED' THEN '已关闭' ELSE '等待中' END) AS auditStatus,\r\n" + 
         		"    (CASE o.fulfillmentstatus WHEN 'PENDING' THEN '等待中' WHEN 'BREAKUP' THEN '已终止' ELSE '已处理' END) AS fulfillmentStatus\r\n" + 
-        		"FROM ali_prod_mysql.fulfillment_order o INNER JOIN ali_prod_mysql.fulfillment_goods g ON o.id = g.fulfillmentOrderId\r\n" + 
-        		"         LEFT JOIN ali_prod_mysql.milk_station m ON o.milkStationId = m.id\r\n" + 
-        		"         LEFT JOIN ali_prod_mysql.acl_tree_node acl_a ON m.id = acl_a.key\r\n" + 
-        		"         LEFT JOIN ali_prod_mysql.acl_tree_node acl_p ON acl_a.parent_key = acl_p.key\r\n" + 
-        		"         LEFT JOIN ali_prod_mysql.acl_tree_node acl_pp ON acl_p.parent_key = acl_pp.key\r\n" + 
+        		"FROM fulfillment_order o INNER JOIN fulfillment_goods g ON o.id = g.fulfillmentOrderId\r\n" +
+        		"         LEFT JOIN milk_station m ON o.milkStationId = m.id\r\n" +
+        		"         LEFT JOIN acl_tree_node acl_a ON m.id = acl_a.key\r\n" +
+        		"         LEFT JOIN acl_tree_node acl_p ON acl_a.parent_key = acl_p.key\r\n" +
+        		"         LEFT JOIN acl_tree_node acl_pp ON acl_p.parent_key = acl_pp.key\r\n" +
         		"WHERE o.outOrderType = 'PERIOD' AND o.type = 'SALE_ORDER'\r\n" + 
         		"AND o.fulfillmentStatus <> 'BREAKUP'\r\n" + 
         		" AND o.createdAt >= '"+startDate+"'\r\n" + 
@@ -214,102 +199,6 @@ public class SparkSqlController {
 	
 	
 
-	@GetMapping("/getMaxRecord")
-	public String getMaxRecord() {
-		String sql = "select max(id),max(updatedat),max(createdat) from ali_prod_mysql.fulfillment_goods where id is not null and updatedat is not null and createdat is not null;";
-		
-		Map map =sparkService.getMaxRecord("hiveGetMaxRecord",sql);
-		
-		return map.get("id").toString();
-		
-	}
-	
-	@GetMapping("/orderCount")
-	public String orderCount(String startDate,String endDate) {
-		//执行基础数据同步
-		treeNodeService.syncMysqlToHdfs(true, "acl_tree_node");
-		milkSationService.syncMysqlToHdfs(true, "milk_station");
-		//执行履约订单同步
-		orderService.syncMysqlToHdfs(true, "fulfillment_order",startDate,endDate);
-		//执行履约订单项同步
-		goodsService.syncMysqlToHdfs(true, "fulfillment_goods",startDate,endDate);
-		
-		System.setProperty("HADOOP_USER_NAME", "hadoop");
-		System.setProperty("USER_NAME", "hadoop");
-		SparkSession sparkSession =SparkUtil.createSparkClusterSession("orderCount");
-		String sql="\r\n" + 
-				"select max(g.Goodsname) AS goodsName,\r\n" + 
-				"(CASE WHEN (o.operatorType) = 'NORMAL' THEN '线上订单'\r\n" + 
-				"           WHEN (o.operatorType) = 'DELIVERER' THEN '送奶工'\r\n" + 
-				"           WHEN (o.operatorType) = 'STATION_MASTER' THEN '块长'\r\n" + 
-				"           WHEN (o.operatorType) = 'CUSTOMER_SERVICE' THEN '客服代下单'\r\n" + 
-				"           WHEN (o.operatorType) = 'PLAN_ORDER' THEN '计划下单'\r\n" + 
-				"           WHEN (o.operatorType) = 'GROUP_PERIOD' THEN '团客户开单'  \r\n"
-				+ "         WHEN (o.operatorType) = 'GROUP_PERIOD' THEN '团客户开单'  end) AS orderFrom,\r\n" + 
-				"             o.subChannelName AS subChannelName,count(o.id) AS orderCount,SUM(o.paidAmount/100) AS paidAmount\r\n" + 
-				"            from ali_prod_mysql.fulfillment_order o left join (select g.fulfillmentorderid,max(g.goodscode) goodscode,max(g.goodsname) goodsname \r\n" + 
-				"            from ali_prod_mysql.fulfillment_goods g group by g.fulfillmentorderid) g on  g.fulfillmentOrderId =o.id\r\n" + 
-				"where  o.type = 'SALE_ORDER' and  o.outOrderType not IN ('O2O_DELIVERY','O2O_SELF_PICK_UP','POS','REPLENISHMENT','MEMRER_GIFY_CARD') \r\n" + 
-				"and o.fulfillmentStatus not in ('BREAKUP')\r\n" + 
-				"and  o.CREATEDAT>= '"+startDate+"' and o.CREATEDAT< '"+endDate+"'\r\n" + 
-				"group by g.goodscode,o.subChannelName,o.operatorType;";
-		Dataset<Row> ds =sparkSession.sql(sql);
-		try {
-			SparkUtil.writeCsvToDirectory(ds,new Path("hdfs://node3:9000/user/root/directory/data/order_count"));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		HDFSUtils.copyRename("/user/root/directory/data/order_count","/user/root/directory/data/order_count/order_count.csv");
-		
-//		sparkSession.stop();
-		return String.valueOf(ds.collectAsList().size());
-		
-	}
-	
-	@GetMapping("/orderWarnDetailList")
-	public String orderWarnDetailList(String startDate,String endDate) {
-		
-		
-		System.setProperty("HADOOP_USER_NAME", "hadoop");
-		System.setProperty("USER_NAME", "hadoop");
-		SparkSession sparkSession =SparkUtil.createSparkClusterSession("orderDetailList");
-		String sql="\r\n" + 
-				"select g.Goodsname AS goodsName,g.goodscode AS goodsCode, \r\n" + 
-				"(CASE WHEN (o.operatorType) = 'NORMAL' THEN '线上订单'\r\n" + 
-				"           WHEN (o.operatorType) = 'DELIVERER' THEN '送奶工'\r\n" + 
-				"           WHEN (o.operatorType) = 'STATION_MASTER' THEN '块长'\r\n" + 
-				"           WHEN (o.operatorType) = 'CUSTOMER_SERVICE' THEN '客服代下单'\r\n" + 
-				"           WHEN (o.operatorType) = 'PLAN_ORDER' THEN '计划下单'\r\n" + 
-				"           WHEN (o.operatorType) = 'GROUP_PERIOD' THEN '团客户开单'   " +
-				" ELSE o.operatorType end) AS orderFrom,\r\n" + 
-				" o.outorderid as outOrderId,"+
-				"             o.subChannelName AS subChannelName,o.paidAmount/100 AS paidAmount\r\n" + 
-				"            from ali_prod_mysql.fulfillment_order o left join (select g.fulfillmentorderid,max(g.goodscode) goodscode,max(g.goodsname) goodsname \r\n" + 
-				"            from ali_prod_mysql.fulfillment_goods g group by g.fulfillmentorderid) g on  g.fulfillmentOrderId =o.id\r\n" + 
-				"where  o.type = 'SALE_ORDER' and  o.outOrderType not IN ('O2O_DELIVERY','O2O_SELF_PICK_UP','POS','REPLENISHMENT','MEMRER_GIFY_CARD') \r\n" + 
-				"and o.fulfillmentStatus not in ('BREAKUP') "
-				+ "and o.operatorType not in ('NORMAL','DELIVERER','STATION_MASTER','CUSTOMER_SERVICE','PLAN_ORDER','GROUP_PERIOD') \r\n" + 
-				"and  o.CREATEDAT>= '"+startDate+"' and o.CREATEDAT< '"+endDate +"'";
-//				"group by g.goodscode,o.subChannelName,o.operatorType;";
-		Dataset<Row> ds =sparkSession.sql(sql);
-		try {
-			SparkUtil.writeCsvToDirectory(ds,new Path("hdfs://node3:9000/user/root/directory/data/order_detail_list"));
-		} catch (IllegalArgumentException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		HDFSUtils.copyRename("/user/root/directory/data/order_detail_list","/user/root/directory/data/order_detail_list/order_detail_list.csv");
-		
-//		sparkSession.stop();
-		return String.valueOf(ds.collectAsList().size());
-		
-	}
+
 	
 }

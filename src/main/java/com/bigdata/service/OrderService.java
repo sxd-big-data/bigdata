@@ -80,7 +80,7 @@ public class OrderService extends BaseService{
 				e.printStackTrace();
 			}
 			//
-			/*if (!hisTableName.isEmpty()) {
+			if (!hisTableName.isEmpty()) {
 				uploadFilePath = hdfsDirectory + hisTableName + ".txt";
 				try {
 					HDFSUtils.uploadFile(hisTableName);
@@ -95,7 +95,7 @@ public class OrderService extends BaseService{
 				String[] sql = orderRep.updateHisData(); // 删除要更新的记录
 				sparkService.updateHisData(hisTableName + "Update", sql[0]); // 将要更新的最新记录写入库
 				sparkService.updateHisData(hisTableName + "Update", sql[1]);
-			}*/
+			}
 			 
 		}
 
@@ -107,28 +107,6 @@ public class OrderService extends BaseService{
 		// TODO Auto-generated method stub
 		return orderRep.queryMaxIdAndCreatedTime();
 	}
-
-
-	public void syncPurchaseOrderToHdfs(Boolean overWrite, String tableName){
-		bigDataUtil.syncTableHisToHdfs(overWrite,hdfsDirectory,tableName);
-	}
-
-	public void syncOrderByNameToHdfs(Boolean overWrite, String tableName){
-		bigDataUtil.syncTableHisToHdfs(overWrite,hdfsDirectory,tableName);
-	}
-
-	public void syncOrderLineToHdfs(Boolean overWrite, String tableName){
-		bigDataUtil.syncTableHisToHdfs(overWrite,hdfsDirectory,tableName);
-	}
-
-	public void syncOrderSideEffectToHdfs(Boolean overWrite, String tableName){
-		bigDataUtil.syncTableHisToHdfs(overWrite,hdfsDirectory,tableName);
-	}
-
-	public void syncEmployOrderSideEffectToHdfs(Boolean overWrite, String tableName){
-		bigDataUtil.syncTableHisToHdfs(overWrite,hdfsDirectory,tableName);
-	}
-
 
 	@Override
 	public void syncMysqlToHdfs(Boolean overWrite, String tableName) {
